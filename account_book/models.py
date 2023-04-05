@@ -3,10 +3,9 @@ from typing import Optional
 
 from pydantic import BaseModel, conint
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from account_book.db import Base
 
 
 class UserRequest(BaseModel):
@@ -49,9 +48,15 @@ class User(Base):
     histories = relationship("AccountHistory", backref="users")
     tokens = relationship("AuthToken", backref="users")
 
+    def __init__(self, email, hashed_password, nickname, is_active):
+        self.email = email
+        self.hashed_password = hashed_password
+        self.nickname = nickname
+        self.is_active = is_active
+
 
 class AccountHistory(Base):
-    __tablename__ = "accounthistories"
+    __tablename__ = "account_histories"
 
     id = Column(Integer, primary_key=True)
     amount = Column(Integer)
@@ -59,6 +64,13 @@ class AccountHistory(Base):
     is_deleted = Column(Boolean, default=True)
     is_withdrawn = Column(Boolean, default=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+
+    def __init__(self, amount, memo, is_deleted, is_withdrawn, user_id):
+        self.amount = amount
+        self.memo = memo
+        self.is_deleted = is_deleted
+        self.is_withdrawn = is_withdrawn
+        self.user_id = user_id
 
 
 class AuthToken(Base):
@@ -68,3 +80,8 @@ class AuthToken(Base):
     token = Column(String, unique=True)
     expired_at = Column(DateTime)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+
+    def __init__(self, token, expired_at, user_id):
+        self.token = token
+        self.expired_at = expired_at
+        self.user_id = user_id
