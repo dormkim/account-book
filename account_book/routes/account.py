@@ -26,13 +26,12 @@ async def post_account_hisotry(
 ):
     user_id = await get_user_id(jwt_payload=jwt_payload, db_session=db_session)
 
-    account_history = AccountHistory(
-        amount=request.amount,
-        memo=request.memo,
-        is_deleted=False,
-        is_withdrawn=request.is_withdrawn,
-        user_id=user_id,
-    )
+    account_history = AccountHistory()
+    account_history.amount = request.amount
+    account_history.memo = request.memo
+    account_history.is_deleted = False
+    account_history.is_withdrawn = request.is_withdrawn
+    account_history.user_id = user_id
 
     db_session.add(account_history)
     db_session.commit()

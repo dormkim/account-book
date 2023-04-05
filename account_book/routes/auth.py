@@ -34,14 +34,13 @@ async def signup(
             status_code=status.HTTP_409_CONFILCT, detail="Registered email"
         )
 
-    new_user = User(
-        email=request.email,
-        hashed_password=bcrypt.hashpw(
-            request.password.encode("utf-8"), bcrypt.gensalt()
-        ),
-        nickname=request.nickname,
-        is_active=True,
+    new_user = User()
+    new_user.email = request.email
+    new_user.hashed_password = bcrypt.hashpw(
+        request.password.encode("utf-8"), bcrypt.gensalt()
     )
+    new_user.nickname = request.nickname
+    new_user.is_active = True
 
     db_session.add(new_user)
     db_session.commit()
@@ -94,11 +93,11 @@ async def signin(
 
         return user_token
 
-    auth_token = AuthToken(
-        token=token,
-        expired_at=expired_at,
-        user_id=find_user.id,
-    )
+    auth_token = AuthToken()
+    auth_token.token = token
+    auth_token.expired_at = expired_at
+    auth_token.user_id = find_user.id
+
     db_session.add(auth_token)
     db_session.commit()
 
