@@ -2,9 +2,8 @@
 name = "account-book"
 version = "0.1.0"
 description = ""
-authors = ["fito-domin <domin.kim@fitogether.com>"]
+authors = ["dormkim <ehals5921@gmail.com>"]
 readme = "README.md"
-packages = [{include = "account_book"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -23,7 +22,6 @@ cryptograpy = "^0.0.0"
 black = "^23.3.0"
 flake8 = "^6.0.0"
 isort = "^5.12.0"
-pyright = "^1.1.301"
 pytest = "^7.2.2"
 
 [build-system]
