@@ -1,17 +1,6 @@
 version: "3.8"
 
 services:
-  db:
-    image: mysql:5.7
-    platform: linux/amd64
-    container_name: account-book-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: account_books
-    ports:
-      - 3306:3306
-    volumes:
-      - shared-data:/var/lib/mysql
   app:
     build:
       context: .
@@ -28,6 +17,18 @@ services:
     working_dir: /code
     volumes:
       - shared-data:/code/account-book-app
+
+  db:
+    image: mysql:5.7
+    platform: linux/amd64
+    container_name: account-book-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: account_books
+    ports:
+      - 3306:3306
+    volumes:
+      - shared-data:/var/lib/mysql
 
 volumes:
   shared-data:
