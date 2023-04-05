@@ -3,9 +3,10 @@ from typing import Optional
 
 from pydantic import BaseModel, conint
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from account_book.db import Base
+Base = declarative_base()
 
 
 class UserRequest(BaseModel):
