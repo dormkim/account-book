@@ -32,7 +32,6 @@ class AccountHistoryRequest(BaseModel):
 
 
 class AccountHistoryResponse(BaseModel):
-    id: int
     amount: int
     memo: Optional[str]
     is_withdrawn: bool
@@ -42,9 +41,9 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String, unique=True)
+    email = Column(String(100), unique=True)
     hashed_password = Column(String)
-    nickname = Column(String, nullable=True)
+    nickname = Column(String(50), nullable=True)
     is_active = Column(Boolean, default=True)
     histories = relationship("AccountHistory", backref="users")
     tokens = relationship("AuthToken", backref="users")
@@ -61,7 +60,7 @@ class AccountHistory(Base):
 
     id = Column(Integer, primary_key=True)
     amount = Column(Integer)
-    memo = Column(String, nullable=True)
+    memo = Column(String(255), nullable=True)
     is_deleted = Column(Boolean, default=True)
     is_withdrawn = Column(Boolean, default=True)
     user_id = Column(Integer, ForeignKey("users.id"))
