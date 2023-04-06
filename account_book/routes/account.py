@@ -2,8 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from account_book.db import get_session
-from account_book.models import (AccountHistory, AccountHistoryRequest,
-                                 AccountHistoryResponse)
+from account_book.models import (
+    AccountHistory,
+    AccountHistoryRequest,
+    AccountHistoryResponse,
+)
 from account_book.utils.auth import check_jwt_token
 from account_book.utils.user import get_user_id
 
@@ -59,6 +62,12 @@ async def recovery_account_history(
         .filter_by(user_id=user_id, id=history_id, is_deleted=False)
         .first()
     )
+
+    if account_history is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Password",
+        )
     account_history.is_deleted = False
     db_session.commit()
 
