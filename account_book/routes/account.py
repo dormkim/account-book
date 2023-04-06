@@ -2,11 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from account_book.db import get_session
-from account_book.models import (
-    AccountHistoryRequest,
-    AccountHistory,
-    AccountHistoryResponse,
-)
+from account_book.models import (AccountHistory, AccountHistoryRequest,
+                                 AccountHistoryResponse)
 from account_book.utils.auth import check_jwt_token
 from account_book.utils.user import get_user_id
 
@@ -26,18 +23,18 @@ async def post_account_hisotry(
 ):
     user_id = await get_user_id(jwt_payload=jwt_payload, db_session=db_session)
 
-    account_history = AccountHistory()
-    account_history.amount = request.amount
-    account_history.memo = request.memo
-    account_history.is_deleted = False
-    account_history.is_withdrawn = request.is_withdrawn
-    account_history.user_id = user_id
+    account_history = AccountHistory(
+        amount=request.amount,
+        memo=request.memo,
+        is_deleted=False,
+        is_withdrawn=request.is_withdrawn,
+        user_id=user_id,
+    )
 
     db_session.add(account_history)
     db_session.commit()
 
     return {
-        "id": account_history.id,
         "amount": account_history.amount,
         "memo": account_history.memo,
         "is_withdrawn": account_history.is_withdrawn,
@@ -66,7 +63,6 @@ async def recovery_account_history(
     db_session.commit()
 
     return {
-        "id": account_history.id,
         "amount": account_history.amount,
         "memo": account_history.memo,
         "is_withdrawn": account_history.is_withdrawn,

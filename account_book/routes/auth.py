@@ -6,13 +6,8 @@ from sqlalchemy.orm import Session
 
 from account_book.constants import EXPIRATION_TIME_MINUTES
 from account_book.db import get_session
-from account_book.models import (
-    AuthToken,
-    AuthTokenResponse,
-    SignUpResponse,
-    User,
-    UserRequest,
-)
+from account_book.models import (AuthToken, AuthTokenResponse, SignUpResponse,
+                                 User, UserRequest)
 from account_book.utils.auth import get_jwt_token
 
 router = APIRouter()
@@ -31,16 +26,17 @@ async def signup(
     find_user = db_session.query(User).filter_by(email=request.email).first()
     if find_user:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFILCT, detail="Registered email"
+            status_code=status.HTTP_409_CONFLICT, detail="Registered email"
         )
 
-    new_user = User()
-    new_user.email = request.email
-    new_user.hashed_password = bcrypt.hashpw(
-        request.password.encode("utf-8"), bcrypt.gensalt()
+    new_user = User(
+        email=request.email,
+        hashed_password=bcrypt.hashpw(
+            request.password.encode("utf-8"), bcrypt.gensalt()
+        ),
+        nickname=request.nickname,
+        is_active=True,
     )
-    new_user.nickname = request.nickname
-    new_user.is_active = True
 
     db_session.add(new_user)
     db_session.commit()
@@ -67,7 +63,7 @@ async def signin(
             detail="Invalied Email",
         )
     if not bcrypt.checkpw(
-        request.password.encode("utf-8"),
+        request.password.encode(),
         find_user.hashed_password,
     ):
         raise HTTPException(
@@ -89,16 +85,16 @@ async def signin(
     if user_token:
         user_token.token = token
         user_token.expired_at = expired_at
-        db_session.commit()
 
-        return user_token
+    else:
+        auth_token = AuthToken(
+            token=token,
+            expired_at=expired_at,
+            user_id=find_user.id,
+        )
 
-    auth_token = AuthToken()
-    auth_token.token = token
-    auth_token.expired_at = expired_at
-    auth_token.user_id = find_user.id
+        db_session.add(auth_token)
 
-    db_session.add(auth_token)
     db_session.commit()
 
     return {
